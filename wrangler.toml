@@ -5,7 +5,7 @@ pages_build_output_dir = "public"
 [[d1_databases]]
 binding = "DB"
 database_name = "grade3-fund"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "b61191eb73cd63812d3b7045744578e5"
 
 [[r2_buckets]]
 binding = "RECEIPTS"
