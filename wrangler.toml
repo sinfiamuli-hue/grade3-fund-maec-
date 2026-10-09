@@ -1,11 +1,15 @@
 name = "grade3-fund-maec"
+main = "worker.js"
 compatibility_date = "2024-11-01"
-pages_build_output_dir = "public"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "grade3-fund"
-database_id = "b61191eb73cd63812d3b7045744578e5"
+database_id = "YOUR-REAL-UUID"
 
 [[r2_buckets]]
 binding = "RECEIPTS"
