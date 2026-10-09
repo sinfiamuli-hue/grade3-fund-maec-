@@ -1,0 +1,12 @@
+name = "grade3-fund-maec"
+compatibility_date = "2024-11-01"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "grade3-fund"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+[[r2_buckets]]
+binding = "RECEIPTS"
+bucket_name = "grade3-fund-receipts"

@@ -1,0 +1,17 @@
+{
+  "name": "grade3-fund-maec",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "wrangler pages dev public --d1=DB --r2=RECEIPTS --compatibility-date=2024-11-01",
+    "db:local": "wrangler d1 execute grade3-fund --local --file=db/schema.sql && wrangler d1 execute grade3-fund --local --file=db/seed_demo.sql",
+    "db:remote": "wrangler d1 execute grade3-fund --remote --file=db/schema.sql",
+    "db:seed-demo:remote": "wrangler d1 execute grade3-fund --remote --file=db/seed_demo.sql",
+    "deploy": "wrangler pages deploy public --project-name=grade3-fund-maec",
+    "test": "node --experimental-sqlite tests/api.test.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^3"
+  },
+  "type": "module"
+}
