@@ -1,0 +1,16 @@
+{
+  "name": "Grade 3 Fund – MAEC",
+  "short_name": "Grade 3 Fund",
+  "description": "Grade 3 class fund, contributions, expenses and celebrations",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf3e6",
+  "theme_color": "#b5541f",
+  "icons": [
+    {"src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
