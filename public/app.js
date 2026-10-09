@@ -5,7 +5,7 @@ const mvr = c => 'MVR ' + (c / 100).toLocaleString('en', { minimumFractionDigits
 const STAT = { paid: 'Paid', partial: 'Partially paid', unpaid: 'Unpaid', overpaid: 'Overpaid' };
 const badge = s => `<span class="b ${esc(s)}">${esc(STAT[s] || s[0].toUpperCase() + s.slice(1))}</span>`;
 const app = $('#app'), today = new Date().toISOString().slice(0, 10);
-let me = null, year = new Date().getFullYear(), view = 'dashboard', deferred = null;
+let me = null, year = 2026, view = 'dashboard', deferred = null;
 
 async function api(path, opt = {}) {
   let r;
@@ -16,11 +16,11 @@ async function api(path, opt = {}) {
   return d;
 }
 const post = (p, b) => api(p, { method: 'POST', body: JSON.stringify(b) });
-function toast(m, bad) { const t = $('#toast'); t.textContent = m; t.classList.toggle('bad', !!bad); t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), bad ? 8000 : 4000); }
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3200); }
 const key = () => crypto.randomUUID();
 const isAdmin = () => me?.role === 'admin';
 const opts = (arr, sel) => arr.map(([v, l]) => `<option value="${esc(v)}"${String(v) === String(sel) ? ' selected' : ''}>${esc(l)}</option>`).join('');
-const yearSel = () => `<select id="year" aria-label="Year">${opts(Array.from({ length: 5 }, (_, i) => { const y = new Date().getFullYear() - i; return [y, y + ' (Jan–Dec)']; }), year)}</select>`;
+const yearSel = () => '';
 
 async function boot() {
   try { me = await api('me'); } catch (e) {
@@ -108,7 +108,6 @@ V.admin = async () => {
   <h2>Create account</h2><form data-f="user"><label>Name<input name="name"></label><label>Email<input name="email" type="email" required></label><label>Temporary password (10+)<input name="password" minlength="10" required></label><label>Role<select name="role"><option value="parent">Parent</option><option value="admin">Administrator</option></select></label><label>Child (parents)<select name="student_id">${opts(st.map(s => [s.id, s.name]))}</select></label><button>Create</button></form></div>
   <div class="card"><h2>Settings</h2><form data-f="settings"><label>Default expected contribution (MVR)<input name="default_expected" type="number" step="0.01" min="0" value="${set.default_expected / 100}"></label><button>Save</button></form></div>
   <div class="card"><h2>Other income</h2><form data-f="income"><input type="hidden" name="idem_key" value="${key()}"><label>Date<input name="received_on" type="date" value="${today}" required></label><label>Description<input name="description" required></label><label>Amount MVR<input name="amount" type="number" step="0.01" min="0.01" required></label><button>Record</button></form></div>
-  <div class="card"><h2>Year-end</h2><p class="note">Sets next year's opening balance to ${year}'s closing balance. Can be re-run if records change.</p><button data-act="close">Close ${year} → open ${year + 1}</button></div>
   ${me.demo ? `<div class="card"><h2>Demo data</h2><p class="note">Sample records are kept separate and never counted as real money. Remove them before entering real records.</p><button class="bad" data-act="cleardemo">Remove demo data</button></div>` : ''}
   <div class="card"><h2>Audit log (latest 100)</h2><div class="sc"><table>${au.map(a => `<tr><td>${esc(a.at)}</td><td>${esc(a.email || '')}</td><td>${esc(a.action)} ${esc(a.entity || '')} ${a.entity_id ?? ''}</td></tr>`).join('')}</table></div></div>`;
 };
@@ -137,7 +136,7 @@ document.addEventListener('submit', async e => {
   const n = e.target.dataset.f; if (!n) return; e.preventDefault();
   const f = Object.fromEntries([...new FormData(e.target)].filter(([, v]) => typeof v === 'string'));
   const b = e.target.querySelector('button'); b && (b.disabled = true);
-  try { await H[n](f, e.target); } catch (x) { toast(x.message, true); } finally { b && (b.disabled = false); }
+  try { await H[n](f, e.target); } catch (x) { toast(x.message); } finally { b && (b.disabled = false); }
 });
 document.addEventListener('change', e => { if (e.target.id === 'year') { year = +e.target.value; go(view); } });
 document.addEventListener('click', async e => {
@@ -155,7 +154,7 @@ document.addEventListener('click', async e => {
     if (act === 'deact') { if (confirm('Deactivate this account?')) { await post(`users/${id}/deactivate`, {}); go('admin'); } }
     if (act === 'close') { if (confirm(`Close ${year} and set ${year + 1} opening balance?`)) { const r = await post('years/close', { year }); toast('Closing balance ' + mvr(r.closing)); } }
     if (act === 'cleardemo') { if (prompt('Type REMOVE DEMO to delete all sample records') === 'REMOVE DEMO') { await post('demo/clear', { confirm: 'REMOVE DEMO' }); toast('Demo data removed'); await boot(); } }
-  } catch (x) { toast(x.message, true); }
+  } catch (x) { toast(x.message); }
 });
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; $('#install').hidden = false; });
 $('#install').onclick = async () => { if (deferred) { deferred.prompt(); await deferred.userChoice; deferred = null; $('#install').hidden = true; } };
