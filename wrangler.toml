@@ -1,10 +1,6 @@
 name = "grade3-fund-maec"
-main = "worker.js"
 compatibility_date = "2024-11-01"
-
-[assets]
-directory = "./public"
-binding = "ASSETS"
+pages_build_output_dir = "public"
 
 [[d1_databases]]
 binding = "DB"
