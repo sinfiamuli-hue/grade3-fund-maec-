@@ -16,7 +16,7 @@ async function api(path, opt = {}) {
   return d;
 }
 const post = (p, b) => api(p, { method: 'POST', body: JSON.stringify(b) });
-function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3200); }
+function toast(m, bad) { const t = $('#toast'); t.textContent = m; t.classList.toggle('bad', !!bad); t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), bad ? 8000 : 4000); }
 const key = () => crypto.randomUUID();
 const isAdmin = () => me?.role === 'admin';
 const opts = (arr, sel) => arr.map(([v, l]) => `<option value="${esc(v)}"${String(v) === String(sel) ? ' selected' : ''}>${esc(l)}</option>`).join('');
@@ -137,7 +137,7 @@ document.addEventListener('submit', async e => {
   const n = e.target.dataset.f; if (!n) return; e.preventDefault();
   const f = Object.fromEntries([...new FormData(e.target)].filter(([, v]) => typeof v === 'string'));
   const b = e.target.querySelector('button'); b && (b.disabled = true);
-  try { await H[n](f, e.target); } catch (x) { toast(x.message); } finally { b && (b.disabled = false); }
+  try { await H[n](f, e.target); } catch (x) { toast(x.message, true); } finally { b && (b.disabled = false); }
 });
 document.addEventListener('change', e => { if (e.target.id === 'year') { year = +e.target.value; go(view); } });
 document.addEventListener('click', async e => {
@@ -155,7 +155,7 @@ document.addEventListener('click', async e => {
     if (act === 'deact') { if (confirm('Deactivate this account?')) { await post(`users/${id}/deactivate`, {}); go('admin'); } }
     if (act === 'close') { if (confirm(`Close ${year} and set ${year + 1} opening balance?`)) { const r = await post('years/close', { year }); toast('Closing balance ' + mvr(r.closing)); } }
     if (act === 'cleardemo') { if (prompt('Type REMOVE DEMO to delete all sample records') === 'REMOVE DEMO') { await post('demo/clear', { confirm: 'REMOVE DEMO' }); toast('Demo data removed'); await boot(); } }
-  } catch (x) { toast(x.message); }
+  } catch (x) { toast(x.message, true); }
 });
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; $('#install').hidden = false; });
 $('#install').onclick = async () => { if (deferred) { deferred.prompt(); await deferred.userChoice; deferred = null; $('#install').hidden = true; } };
